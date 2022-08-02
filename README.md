@@ -1,0 +1,1 @@
+#This is the new fireflux_med repo for all my codes. This is maily used for trying to fix the input_Sounding. This case is used since it's half as big as the main run which means running codes is much easier and not much accuracy is sacrificed in the process
