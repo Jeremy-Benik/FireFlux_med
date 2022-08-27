@@ -36,14 +36,14 @@ import os.path as osp
 # Fire_atms = 0
 out_path = 'fireflux_med_sounding_vars_1.pkl'
 if not osp.exists(out_path):
-    # %% Reading in the files
+    # Reading in the files
     print('Reading in the files')
     open_fire = nc.Dataset('/home/jbenik/fireflux_med/fire_atms_1/open/ff_med_wrfout_open_fire_atms_1')
     cyclic_fire = nc.Dataset('/home/jbenik/fireflux_med/fire_atms_1/cyclic/ff_med_wrfout_cyclic_fire_atms_1')
     # Open and cyclic for fire_atms = 0
     open_no_fire = nc.Dataset('/home/jbenik/fireflux_med/fire_atms_0/open_boundary_conditions/ff_med_wrfout_fire_atms_0')
     cyclic_no_fire = nc.Dataset('/home/jbenik/fireflux_med/fire_atms_0/cyclic_boundary_conditions/wrfout_merged')
-    # %% Reading in variables
+    # Reading in variables
     print('Reading in time')
     time_open_fire = open_fire.variables['XTIME'][:]
     time_cyclic_fire = cyclic_fire.variables['XTIME'][:]
@@ -134,157 +134,6 @@ if not osp.exists(out_path):
     ts6 = main_tower['Ts_6m']
 
 
-    # Open with fire
-    # 20 meters open boundary conditions
-    '''
-    print("Interpolating heights")
-    print("Interpolating U at 20 meters")
-    U_20_open_fire = wrf.interplevel(u_open_fire, ht_open_fire, 20) # Run this for all time
-    #save everything in the results dictionary, then with that we can analyze it some more since we will have all the data. 
-    print("Interpolating V at 20 meters")
-    V_20_open_fire = wrf.interplevel(v_open_fire, ht_open_fire, 20)
-    print("Calculating Wind Speed")
-    ws_20_open_fire = np.sqrt((U_20_open_fire ** 2) + (V_20_open_fire ** 2))
-    print("Interpolating W at 20 meters")
-    #W_20_open_fire = wrf.interplevel(w_open_fire, ht_open_fire, 20)
-
-    # 10 meters open boundary conditions
-    print("Interpolating heights")
-    print("Interpolating U at 10 meters")
-    U_10_open_fire = wrf.interplevel(u_open_fire, ht_open_fire, 10) # Run this for all time
-    #save everything in the results dictionary, then with that we can analyze it some more since we will have all the data. 
-    print("Interpolating V at 10 meters")
-    V_10_open_fire = wrf.interplevel(v_open_fire, ht_open_fire, 10)
-    print("Calculating Wind Speed")
-    ws_10_open_fire = np.sqrt((U_10_open_fire ** 2) + (V_10_open_fire ** 2))
-    print("Interpolating W at 10 meters")
-    #W_10_open_fire = wrf.interplevel(w_open_fire, ht_open_fire, 10)
-
-    # 5.77 meters open boundary conditions
-    print("Interpolating heights")
-    print("Interpolating U at 5.77 meters")
-    U_577_open_fire = wrf.interplevel(u_open_fire, ht_open_fire, 5.77) # Run this for all time
-    #save everything in the results dictionary, then with that we can analyze it some more since we will have all the data. 
-    print("Interpolating V at 5.77 meters")
-    V_577_open_fire = wrf.interplevel(v_open_fire, ht_open_fire, 5.77)
-    print("Calculating Wind Speed")
-    ws_577_open_fire = np.sqrt((U_577_open_fire ** 2) + (V_577_open_fire ** 2))
-    print("Interpolating W at 5.77 meters")
-    #W_577_open_fire = wrf.interplevel(w_open_fire, ht_open_fire, 5.77)
-
-
-    # cyclic with fire
-    # 20 meters cyclic boundary conditions
-    print("Interpolating heights")
-    print("Interpolating U at 20 meters")
-    U_20_cyclic_fire = wrf.interplevel(u_cyclic_fire, ht_cyclic_fire, 20) # Run this for all time
-    #save everything in the results dictionary, then with that we can analyze it some more since we will have all the data. 
-    print("Interpolating V at 20 meters")
-    V_20_cyclic_fire = wrf.interplevel(v_cyclic_fire, ht_cyclic_fire, 20)
-    print("Calculating Wind Speed")
-    ws_20_cyclic_fire = np.sqrt((U_20_cyclic_fire ** 2) + (V_20_cyclic_fire ** 2))
-    print("Interpolating W at 20 meters")
-    #W_20_cyclic_fire = wrf.interplevel(w_cyclic_fire, ht_cyclic_fire, 20)
-
-    # 10 meters cyclic boundary conditions
-    print("Interpolating heights")
-    print("Interpolating U at 10 meters")
-    U_10_cyclic_fire = wrf.interplevel(u_cyclic_fire, ht_cyclic_fire, 10) # Run this for all time
-    #save everything in the results dictionary, then with that we can analyze it some more since we will have all the data. 
-    print("Interpolating V at 10 meters")
-    V_10_cyclic_fire = wrf.interplevel(v_cyclic_fire, ht_cyclic_fire, 10)
-    print("Calculating Wind Speed")
-    ws_10_cyclic_fire = np.sqrt((U_10_cyclic_fire ** 2) + (V_10_cyclic_fire ** 2))
-    print("Interpolating W at 10 meters")
-    #W_10_cyclic_fire = wrf.interplevel(w_cyclic_fire, ht_cyclic_fire, 10)
-
-    # 5.77 meters cyclic boundary conditions
-    print("Interpolating heights")
-    print("Interpolating U at 5.77 meters")
-    U_577_cyclic_fire = wrf.interplevel(u_cyclic_fire, ht_cyclic_fire, 5.77) # Run this for all time
-    #save everything in the results dictionary, then with that we can analyze it some more since we will have all the data. 
-    print("Interpolating V at 5.77 meters")
-    V_577_cyclic_fire = wrf.interplevel(v_cyclic_fire, ht_cyclic_fire, 5.77)
-    print("Calculating Wind Speed")
-    ws_577_cyclic_fire = np.sqrt((U_577_cyclic_fire ** 2) + (V_577_cyclic_fire ** 2))
-    print("Interpolating W at 5.77 meters")
-    #W_577_cyclic_fire = wrf.interplevel(w_cyclic_fire, ht_cyclic_fire, 5.77)
-
-
-    # Open without fire
-    # 20 meters cyclic boundary conditions
-    print("Interpolating heights")
-    print("Interpolating U at 20 meters")
-    U_20_open_no_fire = wrf.interplevel(u_open_no_fire, ht_open_no_fire, 20) # Run this for all time
-    #save everything in the results dictionary, then with that we can analyze it some more since we will have all the data. 
-    print("Interpolating V at 20 meters")
-    V_20_open_no_fire = wrf.interplevel(v_open_no_fire, ht_open_no_fire, 20)
-    print("Calculating Wind Speed")
-    ws_20_open_no_fire = np.sqrt((U_20_open_no_fire ** 2) + (V_20_open_no_fire ** 2))
-    print("Interpolating W at 20 meters")
-    #W_20_open_no_fire = wrf.interplevel(w_open_no_fire, ht_open_no_fire, 20)
-
-    # 10 meters cyclic boundary conditions
-    print("Interpolating heights")
-    print("Interpolating U at 10 meters")
-    U_10_open_no_fire = wrf.interplevel(u_open_no_fire, ht_open_no_fire, 10) # Run this for all time
-    #save everything in the results dictionary, then with that we can analyze it some more since we will have all the data. 
-    print("Interpolating V at 10 meters")
-    V_10_open_no_fire = wrf.interplevel(v_open_no_fire, ht_open_no_fire, 10)
-    print("Calculating Wind Speed")
-    ws_10_open_no_fire = np.sqrt((U_10_open_no_fire ** 2) + (V_10_open_no_fire ** 2))
-    print("Interpolating W at 10 meters")
-    #W_10_open_no_fire = wrf.interplevel(w_open_no_fire, ht_open_no_fire, 10)
-
-    # 5.77 meters cyclic boundary conditions
-    print("Interpolating heights")
-    print("Interpolating U at 5.77 meters")
-    U_577_open_no_fire = wrf.interplevel(u_open_no_fire, ht_open_no_fire, 5.77) # Run this for all time
-    #save everything in the results dictionary, then with that we can analyze it some more since we will have all the data. 
-    print("Interpolating V at 5.77 meters")
-    V_577_open_no_fire = wrf.interplevel(v_open_no_fire, ht_open_no_fire, 5.77)
-    print("Calculating Wind Speed")
-    ws_577_open_no_fire = np.sqrt((U_577_open_no_fire ** 2) + (V_577_open_no_fire ** 2))
-    print("Interpolating W at 5.77 meters")
-    #W_577_open_no_fire = wrf.interplevel(w_open_no_fire, ht_open_no_fire, 5.77)
-
-    # cyclic without fire
-    # 20 meters cyclic boundary conditions
-    print("Interpolating heights")
-    print("Interpolating U at 20 meters")
-    U_20_cyclic_no_fire = wrf.interplevel(u_cyclic_no_fire, ht_cyclic_no_fire, 20) # Run this for all time
-    #save everything in the results dictionary, then with that we can analyze it some more since we will have all the data. 
-    print("Interpolating V at 20 meters")
-    V_20_cyclic_no_fire = wrf.interplevel(v_cyclic_no_fire, ht_cyclic_no_fire, 20)
-    print("Calculating Wind Speed")
-    ws_20_cyclic_no_fire = np.sqrt((U_20_cyclic_no_fire ** 2) + (V_20_cyclic_no_fire ** 2))
-    print("Interpolating W at 20 meters")
-    #W_20_cyclic_no_fire = wrf.interplevel(w_cyclic_no_fire, ht_cyclic_no_fire, 20)
-
-    # 10 meters cyclic boundary conditions
-    print("Interpolating heights")
-    print("Interpolating U at 10 meters")
-    U_10_cyclic_no_fire = wrf.interplevel(u_cyclic_no_fire, ht_cyclic_no_fire, 10) # Run this for all time
-    #save everything in the results dictionary, then with that we can analyze it some more since we will have all the data. 
-    print("Interpolating V at 10 meters")
-    V_10_cyclic_no_fire = wrf.interplevel(v_cyclic_no_fire, ht_cyclic_no_fire, 10)
-    print("Calculating Wind Speed")
-    ws_10_cyclic_no_fire = np.sqrt((U_10_cyclic_no_fire ** 2) + (V_10_cyclic_no_fire ** 2))
-    print("Interpolating W at 10 meters")
-    #W_10_cyclic_no_fire = wrf.interplevel(w_cyclic_no_fire, ht_cyclic_no_fire, 10)
-
-    # 5.77 meters cyclic boundary conditions
-    print("Interpolating heights")
-    print("Interpolating U at 5.77 meters")
-    U_577_cyclic_no_fire = wrf.interplevel(u_cyclic_no_fire, ht_cyclic_no_fire, 5.77) # Run this for all time
-    #save everything in the results dictionary, then with that we can analyze it some more since we will have all the data. 
-    print("Interpolating V at 5.77 meters")
-    V_577_cyclic_no_fire = wrf.interplevel(v_cyclic_no_fire, ht_cyclic_no_fire, 5.77)
-    print("Calculating Wind Speed")
-    ws_577_cyclic_no_fire = np.sqrt((U_577_cyclic_no_fire ** 2) + (V_577_cyclic_no_fire ** 2))
-    print("Interpolating W at 5.77 meters")
-    #W_577_cyclic_no_fire = wrf.interplevel(w_cyclic_no_fire, ht_cyclic_no_fire, 5.77)
-'''
     # U for open fire with set values
     U_20_open_fire = u_open_fire[:, 8]
     U_10_open_fire = u_open_fire[:, 4]
@@ -379,14 +228,54 @@ else:
     with open(out_path, 'rb') as f:
         results = pickle.load(f)
     locals().update(results)
+# %% Short towers
+y_east = int(158/2)
+x_east = int(117/2)
+
+# West tower
+y_west = int(151/2)
+x_west = int(94/2)
+
+# South tower
+y_south = int(119/2)
+x_south = int(115/2)
+# %% Main tower data
+main_tower1 = pd.read_csv('/home/jbenik/FireFlux2/Codes_and_Data/Data/Main_Tower_Data/Proc_FF2_10HzMTdespiked_rotated.csv', parse_dates=['TIMESTAMP'], skiprows = (0, 2, 3))
+
+main_tower = main_tower1.truncate(before= np.where(main_tower1['TIMESTAMP'] == '1/30/2013  15:00:00')[0][0], 
+                    after=np.where(main_tower1['TIMESTAMP'] == '1/30/2013  15:29:00')[0][0])
+# Main tower variables
+print("Getting the variables from the main tower data")
+time_main_tower = main_tower['TIMESTAMP']
+time_main = np.arange(0, 1740.1, .1)
+print('20 meter variables')
+ux20 = main_tower['Ux_20m']
+uy20 = main_tower['Uy_20m']
+ws_20 = np.sqrt((ux20 ** 2) + (uy20 ** 2))
+uz20 = main_tower['Uz_20m']
+ts20 = main_tower['Ts_20m']
+
+print('10 meter variables')
+ux10 = main_tower['Ux_10m']
+uy10 = main_tower['Uy_10m']
+ws_10 = np.sqrt((ux10 ** 2) + (uy10 ** 2))
+uz10 = main_tower['Uz_10m']
+ts10 = main_tower['Ts_10m']
+
+print('5.77 meter variable')
+ux6 = main_tower['Ux_6m']
+uy6 = main_tower['Uy_6m']
+ws_6 = np.sqrt((ux6 ** 2) + (uy6 ** 2))
+uz6 = main_tower['Uz_6m']
+ts6 = main_tower['Ts_6m']
 
 # %% Creating plots
 
 # Plotting the U winds from open boundary run
-fig, ax = plt.subplots(3, figsize = (10, 12))
+fig, ax = plt.subplots(3, figsize = (12, 10))
 plt.suptitle('Simulated Main Tower U Winds From Open Boundary Fire Run', fontsize = 18, fontweight = 'bold')
 ax[0].plot(time_open_fire * 60, U_20_open_fire, color = 'red', label = 'U Wind')
-ax[0].set_title('Simulated U Wind at 20m', fontsize = 18, fontweight = 'bold')
+ax[0].set_title('Simulated U Wind at 21.18m', fontsize = 18, fontweight = 'bold')
 ax[0].set_xlabel('Time (S)', fontsize = 12, fontweight = 'bold')
 ax[0].set_ylabel('Wind Speed (m/s)', fontsize = 12, fontweight = 'bold')
 ax[0].legend()
@@ -397,22 +286,24 @@ ax[1].set_title('Simulated U Wind at 10m', fontsize = 18, fontweight = 'bold')
 ax[1].set_xlabel('Time (S)', fontsize = 12, fontweight = 'bold')
 ax[1].set_ylabel('Wind Speed (m/s)', fontsize = 12, fontweight = 'bold')
 ax[1].legend()
+ax[1].grid()
 
 ax[2].plot(time_open_fire * 60, U_577_open_fire, color = 'red', label = 'U Wind')
-ax[2].set_title('Simulated U Wind at 5.77m', fontsize = 18, fontweight = 'bold')
+ax[2].set_title('Simulated U Wind at 5.19m', fontsize = 18, fontweight = 'bold')
 ax[2].set_xlabel('Time (S)', fontsize = 12, fontweight = 'bold')
 ax[2].set_ylabel('Wind Speed (m/s)', fontsize = 12, fontweight = 'bold')
 ax[2].legend()
+ax[2].grid()
 
 plt.tight_layout()
-plt.savefig('/home/jbenik/fireflux_med/images/u_open_fire.png')
-#plt.show()
+#plt.savefig('/home/jbenik/fireflux_med/images/u_open_fire.png')
+plt.show()
 # %% V winds from open boundary run
 # Plotting the V winds from open boundary run 
-fig, ax = plt.subplots(3, figsize = (10, 12))
+fig, ax = plt.subplots(3, figsize = (12, 10))
 plt.suptitle('Simulated Main Tower V Winds From Open Boundary Fire Run', fontsize = 18, fontweight = 'bold')
 ax[0].plot(time_open_fire * 60, V_20_open_fire, color = 'red', label = 'V Wind')
-ax[0].set_title('Simulated V Wind at 20m', fontsize = 18, fontweight = 'bold')
+ax[0].set_title('Simulated V Wind at 21.18m', fontsize = 18, fontweight = 'bold')
 ax[0].set_xlabel('Time (S)', fontsize = 12, fontweight = 'bold')
 ax[0].set_ylabel('Wind Speed (m/s)', fontsize = 12, fontweight = 'bold')
 ax[0].legend()
@@ -423,22 +314,24 @@ ax[1].set_title('Simulated V Wind at 10m', fontsize = 18, fontweight = 'bold')
 ax[1].set_xlabel('Time (S)', fontsize = 12, fontweight = 'bold')
 ax[1].set_ylabel('Wind Speed (m/s)', fontsize = 12, fontweight = 'bold')
 ax[1].legend()
+ax[1].grid()
 
 ax[2].plot(time_open_fire * 60, V_577_open_fire, color = 'red', label = 'V Wind')
-ax[2].set_title('Simulated V Wind at 5.77m', fontsize = 18, fontweight = 'bold')
+ax[2].set_title('Simulated V Wind at 5.19m', fontsize = 18, fontweight = 'bold')
 ax[2].set_xlabel('Time (S)', fontsize = 12, fontweight = 'bold')
 ax[2].set_ylabel('Wind Speed (m/s)', fontsize = 12, fontweight = 'bold')
 ax[2].legend()
+ax[2].grid()
 
 plt.tight_layout()
-plt.savefig('/home/jbenik/fireflux_med/images/v_open_fire.png')
-#plt.show()
+#plt.savefig('/home/jbenik/fireflux_med/images/v_open_fire.png')
+plt.show()
 # %% U winds from cyclic boundary run
 # Plotting the U winds from cyclic boundary run 
-fig, ax = plt.subplots(3, figsize = (10, 12))
+fig, ax = plt.subplots(3, figsize = (12, 10))
 plt.suptitle('Simulated Main Tower U Winds From cyclic Boundary Fire Run', fontsize = 18, fontweight = 'bold')
 ax[0].plot(time_cyclic_fire * 60, U_20_cyclic_fire, color = 'red', label = 'U Wind')
-ax[0].set_title('Simulated U Wind at 20m', fontsize = 18, fontweight = 'bold')
+ax[0].set_title('Simulated U Wind at 21.18m', fontsize = 18, fontweight = 'bold')
 ax[0].set_xlabel('Time (S)', fontsize = 12, fontweight = 'bold')
 ax[0].set_ylabel('Wind Speed (m/s)', fontsize = 12, fontweight = 'bold')
 ax[0].legend()
@@ -449,22 +342,24 @@ ax[1].set_title('Simulated U Wind at 10m', fontsize = 18, fontweight = 'bold')
 ax[1].set_xlabel('Time (S)', fontsize = 12, fontweight = 'bold')
 ax[1].set_ylabel('Wind Speed (m/s)', fontsize = 12, fontweight = 'bold')
 ax[1].legend()
+ax[1].grid()
 
 ax[2].plot(time_cyclic_fire * 60, U_577_cyclic_fire, color = 'red', label = 'U Wind')
-ax[2].set_title('Simulated U Wind at 5.77m', fontsize = 18, fontweight = 'bold')
+ax[2].set_title('Simulated U Wind at 5.19m', fontsize = 18, fontweight = 'bold')
 ax[2].set_xlabel('Time (S)', fontsize = 12, fontweight = 'bold')
 ax[2].set_ylabel('Wind Speed (m/s)', fontsize = 12, fontweight = 'bold')
 ax[2].legend()
+ax[2].grid()
 
 plt.tight_layout()
-plt.savefig('/home/jbenik/fireflux_med/images/u_cyclic_fire.png')
-#plt.show()
+#plt.savefig('/home/jbenik/fireflux_med/images/u_cyclic_fire.png')
+plt.show()
 # %% V winds from cyclic boundary run
 # Plotting the V winds from cyclic boundary run 
-fig, ax = plt.subplots(3, figsize = (10, 12))
+fig, ax = plt.subplots(3, figsize = (12, 10))
 plt.suptitle('Simulated Main Tower V Winds From cyclic Boundary Fire Run', fontsize = 18, fontweight = 'bold')
 ax[0].plot(time_cyclic_fire * 60, V_20_cyclic_fire, color = 'red', label = 'V Wind')
-ax[0].set_title('Simulated V Wind at 20m', fontsize = 18, fontweight = 'bold')
+ax[0].set_title('Simulated V Wind at 21.18m', fontsize = 18, fontweight = 'bold')
 ax[0].set_xlabel('Time (S)', fontsize = 12, fontweight = 'bold')
 ax[0].set_ylabel('Wind Speed (m/s)', fontsize = 12, fontweight = 'bold')
 ax[0].legend()
@@ -475,28 +370,30 @@ ax[1].set_title('Simulated V Wind at 10m', fontsize = 18, fontweight = 'bold')
 ax[1].set_xlabel('Time (S)', fontsize = 12, fontweight = 'bold')
 ax[1].set_ylabel('Wind Speed (m/s)', fontsize = 12, fontweight = 'bold')
 ax[1].legend()
+ax[1].grid()
 
 ax[2].plot(time_cyclic_fire * 60, V_577_cyclic_fire, color = 'red', label = 'V Wind')
-ax[2].set_title('Simulated V Wind at 5.77m', fontsize = 18, fontweight = 'bold')
+ax[2].set_title('Simulated V Wind at 5.19m', fontsize = 18, fontweight = 'bold')
 ax[2].set_xlabel('Time (S)', fontsize = 12, fontweight = 'bold')
 ax[2].set_ylabel('Wind Speed (m/s)', fontsize = 12, fontweight = 'bold')
 ax[2].legend()
+ax[2].grid()
 
 plt.tight_layout()
-plt.savefig('/home/jbenik/fireflux_med/images/v_cyclic_fire.png')
-#plt.show()
+#plt.savefig('/home/jbenik/fireflux_med/images/v_cyclic_fire.png')
+plt.show()
 # %% U and V winds from the fire_atms = 0 runs
 
 # Open Boundary conditions
-fig, ax = plt.subplots(3, figsize = (10, 12))
+fig, ax = plt.subplots(3, figsize = (12, 10))
 ax2 = ax[0].twinx()
 plt.suptitle('Simulated Main Tower V Winds From Open Boundary No Fire Run', fontsize = 18, fontweight = 'bold')
 ax1 = ax[0].plot(time_open_no_fire * 60, U_20_open_no_fire, color = 'red', label = 'U Wind')
 ax3 = ax2.plot(time_open_no_fire * 60, V_20_open_no_fire, color = 'blue', label = 'V Wind')
 ax2.set_ylabel('V Wind (m/s)', fontsize = 12, fontweight = 'bold')
-ax[0].set_title('Simulated U and V Wind at 20m', fontsize = 18, fontweight = 'bold')
+ax[0].set_title('Simulated U and V Wind at 21.18m', fontsize = 18, fontweight = 'bold')
 ax[0].set_xlabel('Time (S)', fontsize = 12, fontweight = 'bold')
-ax[0].set_ylabel('Wind Speed (m/s)', fontsize = 12, fontweight = 'bold')
+ax[0].set_ylabel('U Wind (m/s)', fontsize = 12, fontweight = 'bold')
 label = ax1 + ax3
 labels = [i.get_label() for i in label]
 ax[0].legend(label, labels, prop={'size': 12})
@@ -508,7 +405,7 @@ ax3 = ax2.plot(time_open_no_fire * 60, V_10_open_no_fire, color = 'blue', label 
 ax[1].set_title('Simulated U and V Wind at 10m', fontsize = 18, fontweight = 'bold')
 ax2.set_ylabel('V Wind (m/s)', fontsize = 12, fontweight = 'bold')
 ax[1].set_xlabel('Time (S)', fontsize = 12, fontweight = 'bold')
-ax[1].set_ylabel('Wind Speed (m/s)', fontsize = 12, fontweight = 'bold')
+ax[1].set_ylabel('U Wind (m/s)', fontsize = 12, fontweight = 'bold')
 label = ax1 + ax3
 labels = [i.get_label() for i in label]
 ax[1].legend(label, labels, prop={'size': 12})
@@ -517,31 +414,31 @@ ax[1].grid()
 ax2 = ax[2].twinx()
 ax1 = ax[2].plot(time_open_no_fire * 60, U_577_open_no_fire, color = 'red', label = 'U Wind')
 ax3 = ax2.plot(time_open_no_fire * 60, V_577_open_no_fire, color = 'blue', label = 'V Wind')
-ax[2].set_title('Simulated U and V Wind at 5.77m', fontsize = 18, fontweight = 'bold')
+ax[2].set_title('Simulated U and V Wind at 5.19m', fontsize = 18, fontweight = 'bold')
 ax2.set_ylabel('V Wind (m/s)', fontsize = 12, fontweight = 'bold')
 ax[2].set_xlabel('Time (S)', fontsize = 12, fontweight = 'bold')
-ax[2].set_ylabel('Wind Speed (m/s)', fontsize = 12, fontweight = 'bold')
+ax[2].set_ylabel('U Wind (m/s)', fontsize = 12, fontweight = 'bold')
 label = ax1 + ax3
 labels = [i.get_label() for i in label]
 ax[2].legend(label, labels, prop={'size': 12})
 ax[2].grid()
 
 plt.tight_layout()
-plt.savefig('/home/jbenik/fireflux_med/images/u_and_v_open_no_fire.png')
-#plt.show()
+#plt.savefig('/home/jbenik/fireflux_med/images/u_and_v_open_no_fire.png')
+plt.show()
 
-# %% cyclic Boundary conditions
+# %% Cyclic Boundary conditions
 
 # Cyclic Boundary conditions
-fig, ax = plt.subplots(3, figsize = (10, 12))
+fig, ax = plt.subplots(3, figsize = (12, 10))
 ax2 = ax[0].twinx()
 plt.suptitle('Simulated Main Tower V Winds From cyclic Boundary No Fire Run', fontsize = 18, fontweight = 'bold')
 ax1 = ax[0].plot(time_cyclic_no_fire * 60, U_20_cyclic_no_fire, color = 'red', label = 'U Wind')
 ax3 = ax2.plot(time_cyclic_no_fire * 60, V_20_cyclic_no_fire, color = 'blue', label = 'V Wind')
 ax2.set_ylabel('V Wind (m/s)', fontsize = 12, fontweight = 'bold')
-ax[0].set_title('Simulated U and V Wind at 20m', fontsize = 18, fontweight = 'bold')
+ax[0].set_title('Simulated U and V Wind at 21.18m', fontsize = 18, fontweight = 'bold')
 ax[0].set_xlabel('Time (S)', fontsize = 12, fontweight = 'bold')
-ax[0].set_ylabel('Wind Speed (m/s)', fontsize = 12, fontweight = 'bold')
+ax[0].set_ylabel('U Wind (m/s)', fontsize = 12, fontweight = 'bold')
 label = ax1 + ax3
 labels = [i.get_label() for i in label]
 ax[0].legend(label, labels, prop={'size': 12})
@@ -553,7 +450,7 @@ ax3 = ax2.plot(time_cyclic_no_fire * 60, V_10_cyclic_no_fire, color = 'blue', la
 ax[1].set_title('Simulated U and V Wind at 10m', fontsize = 18, fontweight = 'bold')
 ax2.set_ylabel('V Wind (m/s)', fontsize = 12, fontweight = 'bold')
 ax[1].set_xlabel('Time (S)', fontsize = 12, fontweight = 'bold')
-ax[1].set_ylabel('Wind Speed (m/s)', fontsize = 12, fontweight = 'bold')
+ax[1].set_ylabel('U Wind (m/s)', fontsize = 12, fontweight = 'bold')
 label = ax1 + ax3
 labels = [i.get_label() for i in label]
 ax[1].legend(label, labels, prop={'size': 12})
@@ -562,15 +459,225 @@ ax[1].grid()
 ax2 = ax[2].twinx()
 ax1 = ax[2].plot(time_cyclic_no_fire * 60, U_577_cyclic_no_fire, color = 'red', label = 'U Wind')
 ax3 = ax2.plot(time_cyclic_no_fire * 60, V_577_cyclic_no_fire, color = 'blue', label = 'V Wind')
-ax[2].set_title('Simulated U and V Wind at 5.77m', fontsize = 18, fontweight = 'bold')
+ax[2].set_title('Simulated U and V Wind at 5.19m', fontsize = 18, fontweight = 'bold')
 ax2.set_ylabel('V Wind (m/s)', fontsize = 12, fontweight = 'bold')
 ax[2].set_xlabel('Time (S)', fontsize = 12, fontweight = 'bold')
-ax[2].set_ylabel('Wind Speed (m/s)', fontsize = 12, fontweight = 'bold')
+ax[2].set_ylabel('U Wind (m/s)', fontsize = 12, fontweight = 'bold')
 label = ax1 + ax3
 labels = [i.get_label() for i in label]
 ax[2].legend(label, labels, prop={'size': 12})
 ax[2].grid()
 
 plt.tight_layout()
-plt.savefig('/home/jbenik/fireflux_med/images/u_and_v_cyclic_no_fire.png')
-#plt.show()
+#plt.savefig('/home/jbenik/fireflux_med/images/u_and_v_cyclic_no_fire.png')
+plt.show()
+# %% Wind Speeds Cyclic
+# Plotting the Winds from cyclic boundary run 
+fig, ax = plt.subplots(3, figsize = (12, 10))
+plt.suptitle('Simulated Main Tower Winds From Cyclic Boundary Fire Run', fontsize = 18, fontweight = 'bold')
+ax[0].plot(time_cyclic_fire * 60, ws_20_cyclic_fire, color = 'red', label = 'V Wind')
+ax[0].set_title('Simulated V Wind at 21.18m', fontsize = 18, fontweight = 'bold')
+ax[0].set_xlabel('Time (S)', fontsize = 12, fontweight = 'bold')
+ax[0].set_ylabel('Wind Speed (m/s)', fontsize = 12, fontweight = 'bold')
+ax[0].legend()
+ax[0].grid()
+
+ax[1].plot(time_cyclic_fire * 60, ws_10_cyclic_fire, color = 'red', label = 'V Wind')
+ax[1].set_title('Simulated Wind at 10m', fontsize = 18, fontweight = 'bold')
+ax[1].set_xlabel('Time (S)', fontsize = 12, fontweight = 'bold')
+ax[1].set_ylabel('Wind Speed (m/s)', fontsize = 12, fontweight = 'bold')
+ax[1].legend()
+ax[1].grid()
+
+ax[2].plot(time_cyclic_fire * 60, ws_577_cyclic_fire, color = 'red', label = 'V Wind')
+ax[2].set_title('Simulated Wind at 5.19m', fontsize = 18, fontweight = 'bold')
+ax[2].set_xlabel('Time (S)', fontsize = 12, fontweight = 'bold')
+ax[2].set_ylabel('Wind Speed (m/s)', fontsize = 12, fontweight = 'bold')
+ax[2].legend()
+ax[2].grid()
+
+plt.tight_layout()
+#plt.savefig('/home/jbenik/fireflux_med/images/v_cyclic_fire.png')
+plt.show()
+# %% Wind Speeds Open
+# Plotting the Winds from open boundary run 
+fig, ax = plt.subplots(3, figsize = (12, 10))
+plt.suptitle('Simulated Main Tower Winds From open Boundary Fire Run', fontsize = 18, fontweight = 'bold')
+ax[0].plot(time_open_fire * 60, ws_20_open_fire, color = 'red', label = 'V Wind')
+ax[0].set_title('Simulated V Wind at 21.18m', fontsize = 18, fontweight = 'bold')
+ax[0].set_xlabel('Time (S)', fontsize = 12, fontweight = 'bold')
+ax[0].set_ylabel('Wind Speed (m/s)', fontsize = 12, fontweight = 'bold')
+ax[0].legend()
+ax[0].grid()
+
+ax[1].plot(time_open_fire * 60, ws_10_open_fire, color = 'red', label = 'V Wind')
+ax[1].set_title('Simulated Wind at 10m', fontsize = 18, fontweight = 'bold')
+ax[1].set_xlabel('Time (S)', fontsize = 12, fontweight = 'bold')
+ax[1].set_ylabel('Wind Speed (m/s)', fontsize = 12, fontweight = 'bold')
+ax[1].legend()
+ax[1].grid()
+
+ax[2].plot(time_open_fire * 60, ws_577_open_fire, color = 'red', label = 'V Wind')
+ax[2].set_title('Simulated Wind at 5.19m', fontsize = 18, fontweight = 'bold')
+ax[2].set_xlabel('Time (S)', fontsize = 12, fontweight = 'bold')
+ax[2].set_ylabel('Wind Speed (m/s)', fontsize = 12, fontweight = 'bold')
+ax[2].legend()
+ax[2].grid()
+
+plt.tight_layout()
+#plt.savefig('/home/jbenik/fireflux_med/images/v_open_fire.png')
+plt.show()
+
+# %% Plotting both
+
+# Cyclic and Open Boundary conditions
+fig, ax = plt.subplots(3, figsize = (12, 10))
+ax2 = ax[0].twinx()
+plt.suptitle('Simulated Main Tower Winds From Cyclic and Open Boundary Fire Run', fontsize = 18, fontweight = 'bold')
+ax1 = ax[0].plot(time_cyclic_fire * 60, ws_20_cyclic_fire, color = 'red', label = 'Cyclic Winds')
+ax3 = ax2.plot(time_open_fire * 60, ws_20_open_fire, color = 'blue', label = 'Open Winds')
+ax2.set_ylabel('Cyclic Wind (m/s)', fontsize = 12, fontweight = 'bold')
+ax[0].set_title('Simulated Winds at 21.18m', fontsize = 18, fontweight = 'bold')
+ax[0].set_xlabel('Time (S)', fontsize = 12, fontweight = 'bold')
+ax[0].set_ylabel('Open Wind (m/s)', fontsize = 12, fontweight = 'bold')
+label = ax1 + ax3
+labels = [i.get_label() for i in label]
+ax[0].legend(label, labels, prop={'size': 12})
+ax[0].grid()
+
+ax2 = ax[1].twinx()
+ax1 = ax[1].plot(time_cyclic_fire * 60, ws_10_cyclic_fire, color = 'red', label = 'Cyclic Winds')
+ax3 = ax2.plot(time_open_fire * 60, ws_10_open_fire, color = 'blue', label = 'Open Winds')
+ax[1].set_title('Simulated Winds at 10m', fontsize = 18, fontweight = 'bold')
+ax2.set_ylabel('Cyclic Wind (m/s)', fontsize = 12, fontweight = 'bold')
+ax[1].set_xlabel('Time (S)', fontsize = 12, fontweight = 'bold')
+ax[1].set_ylabel('Open Wind (m/s)', fontsize = 12, fontweight = 'bold')
+label = ax1 + ax3
+labels = [i.get_label() for i in label]
+ax[1].legend(label, labels, prop={'size': 12})
+ax[1].grid()
+
+ax2 = ax[2].twinx()
+ax1 = ax[2].plot(time_cyclic_fire * 60, ws_577_cyclic_fire, color = 'red', label = 'Cyclic Wind')
+ax3 = ax2.plot(time_open_fire * 60, ws_577_open_fire, color = 'blue', label = 'Open Wind')
+ax[2].set_title('Simulated Winds at 5.19m', fontsize = 18, fontweight = 'bold')
+ax2.set_ylabel('Cyclic Wind (m/s)', fontsize = 12, fontweight = 'bold')
+ax[2].set_xlabel('Time (S)', fontsize = 12, fontweight = 'bold')
+ax[2].set_ylabel('Open Wind (m/s)', fontsize = 12, fontweight = 'bold')
+label = ax1 + ax3
+labels = [i.get_label() for i in label]
+ax[2].legend(label, labels, prop={'size': 12})
+ax[2].grid()
+
+plt.tight_layout()
+#plt.savefig('/home/jbenik/fireflux_med/images/u_and_v_cyclic_fire.png')
+plt.show()
+
+
+# %% plotting both on the same plot
+
+# Cyclic and Open Boundary conditions
+fig, ax = plt.subplots(3, figsize = (12, 10))
+plt.suptitle('Simulated Main Tower Winds From Cyclic and Open Boundary Fire Run', fontsize = 18, fontweight = 'bold')
+ax[0].plot(time_cyclic_fire * 60, ws_20_cyclic_fire, color = 'red', label = 'Cyclic Winds')
+ax[0].plot(time_open_fire * 60, ws_20_open_fire, color = 'blue', label = 'Open Winds', linestyle = '--')
+ax[0].set_ylabel('Wind Speeds (m/s)', fontsize = 12, fontweight = 'bold')
+ax[0].set_title('Simulated Winds at 21.18m', fontsize = 18, fontweight = 'bold')
+ax[0].set_xlabel('Time (S)', fontsize = 12, fontweight = 'bold')
+ax[0].legend()
+ax[0].grid()
+
+
+ax[1].plot(time_cyclic_fire * 60, ws_10_cyclic_fire, color = 'red', label = 'Cyclic Winds')
+ax[1].plot(time_open_fire * 60, ws_10_open_fire, color = 'blue', label = 'Open Winds', linestyle = '--')
+ax[1].set_title('Simulated Winds at 10m', fontsize = 18, fontweight = 'bold')
+ax[1].set_xlabel('Time (S)', fontsize = 12, fontweight = 'bold')
+ax[1].set_ylabel('Wind Speeds (m/s)', fontsize = 12, fontweight = 'bold')
+ax[1].legend()
+ax[1].grid()
+
+ax[2].plot(time_cyclic_fire * 60, ws_577_cyclic_fire, color = 'red', label = 'Cyclic Wind')
+ax[2].plot(time_open_fire * 60, ws_577_open_fire, color = 'blue', label = 'Open Wind', linestyle = '--')
+ax[2].set_title('Simulated Winds at 5.19m', fontsize = 18, fontweight = 'bold')
+ax[2].set_xlabel('Time (S)', fontsize = 12, fontweight = 'bold')
+ax[2].set_ylabel('Winds (m/s)', fontsize = 12, fontweight = 'bold')
+ax[2].legend()
+ax[2].grid()
+
+plt.tight_layout()
+#plt.savefig('/home/jbenik/fireflux_med/images/u_and_v_cyclic_fire.png')
+plt.show()
+
+# %% No fire
+
+# Cyclic and Open Boundary conditions
+fig, ax = plt.subplots(3, figsize = (12, 10))
+plt.suptitle('Simulated Main Tower Winds From Cyclic and Open Boundary No Fire Run', fontsize = 18, fontweight = 'bold')
+ax[0].plot(time_cyclic_no_fire * 60, ws_20_cyclic_no_fire, color = 'red', label = 'Cyclic Winds')
+ax[0].plot(time_open_no_fire * 60, ws_20_open_no_fire, color = 'blue', label = 'Open Winds', linestyle = '--')
+ax[0].set_ylabel('Wind Speeds (m/s)', fontsize = 12, fontweight = 'bold')
+ax[0].set_title('Simulated Winds at 21.18m', fontsize = 18, fontweight = 'bold')
+ax[0].set_xlabel('Time (S)', fontsize = 12, fontweight = 'bold')
+ax[0].legend()
+ax[0].grid()
+
+
+ax[1].plot(time_cyclic_no_fire * 60, ws_10_cyclic_no_fire, color = 'red', label = 'Cyclic Winds')
+ax[1].plot(time_open_no_fire * 60, ws_10_open_no_fire, color = 'blue', label = 'Open Winds', linestyle = '--')
+ax[1].set_title('Simulated Winds at 10m', fontsize = 18, fontweight = 'bold')
+ax[1].set_xlabel('Time (S)', fontsize = 12, fontweight = 'bold')
+ax[1].set_ylabel('Wind Speeds (m/s)', fontsize = 12, fontweight = 'bold')
+ax[1].legend()
+ax[1].grid()
+
+ax[2].plot(time_cyclic_no_fire * 60, ws_577_cyclic_no_fire, color = 'red', label = 'Cyclic Wind')
+ax[2].plot(time_open_no_fire * 60, ws_577_open_no_fire, color = 'blue', label = 'Open Wind', linestyle = '--')
+ax[2].set_title('Simulated Winds at 5.19m', fontsize = 18, fontweight = 'bold')
+ax[2].set_xlabel('Time (S)', fontsize = 12, fontweight = 'bold')
+ax[2].set_ylabel('Winds (m/s)', fontsize = 12, fontweight = 'bold')
+ax[2].legend()
+ax[2].grid()
+
+plt.tight_layout()
+#plt.savefig('/home/jbenik/fireflux_med/images/u_and_v_cyclic_no_fire.png')
+plt.show()
+
+# %% Main tower data included
+fig, ax = plt.subplots(3, figsize = (12, 10))
+plt.suptitle('Simulated Main Tower Winds From Cyclic and Open Boundary No Fire Run', fontsize = 18, fontweight = 'bold')
+ax[0].plot(time_cyclic_no_fire * 60, ws_20_cyclic_no_fire, color = 'red', label = 'Cyclic Winds')
+ax[0].plot(time_open_no_fire * 60, ws_20_open_no_fire, color = 'blue', label = 'Open Winds', linestyle = '--')
+ax[0].plot(time_main, ws_20, color = 'green', label = 'Main Tower Winds')
+ax[0].set_ylabel('Wind Speeds (m/s)', fontsize = 12, fontweight = 'bold')
+ax[0].set_title('Simulated Winds at 21.18m', fontsize = 18, fontweight = 'bold')
+ax[0].set_xlabel('Time (S)', fontsize = 12, fontweight = 'bold')
+ax[0].legend()
+ax[0].grid()
+ax[0].set_xlim(1100, 1300)
+
+
+ax[1].plot(time_cyclic_no_fire * 60, ws_10_cyclic_no_fire, color = 'red', label = 'Cyclic Winds')
+ax[1].plot(time_open_no_fire * 60, ws_10_open_no_fire, color = 'blue', label = 'Open Winds', linestyle = '--')
+ax[1].plot(time_main, ws_10, color = 'green', label = 'Main Tower Winds')
+ax[1].set_title('Simulated Winds at 10m', fontsize = 18, fontweight = 'bold')
+ax[1].set_xlabel('Time (S)', fontsize = 12, fontweight = 'bold')
+ax[1].set_ylabel('Wind Speeds (m/s)', fontsize = 12, fontweight = 'bold')
+ax[1].legend()
+ax[1].grid()
+ax[1].set_xlim(1100, 1300)
+
+ax[2].plot(time_cyclic_no_fire * 60, ws_577_cyclic_no_fire, color = 'red', label = 'Cyclic Wind')
+ax[2].plot(time_open_no_fire * 60, ws_577_open_no_fire, color = 'blue', label = 'Open Wind', linestyle = '--')
+ax[2].plot(time_main, ws_6, color = 'green', label = 'Main Tower Winds')
+ax[2].set_title('Simulated Winds at 5.19m', fontsize = 18, fontweight = 'bold')
+ax[2].set_xlabel('Time (S)', fontsize = 12, fontweight = 'bold')
+ax[2].set_ylabel('Winds (m/s)', fontsize = 12, fontweight = 'bold')
+ax[2].legend()
+ax[2].grid()
+ax[2].set_xlim(1100, 1300)
+
+plt.tight_layout()
+#plt.savefig('/home/jbenik/fireflux_med/images/u_and_v_cyclic_no_fire.png')
+plt.show()
+
+# %%
