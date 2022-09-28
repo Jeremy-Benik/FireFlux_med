@@ -58,13 +58,13 @@ if not osp.exists(out_path):
     print('Getting variables from fire runs')
     #Getting u, v, and height from open boundary conditions with fire
     print('Getting u wind from open boundary conditions fireflux_med run')
-    u_open_fire = wrf.getvar(open_fire, "ua", None, units = "m/s")[:, :, y_main, x_main]
+    u_open_fire = wrf.getvar(open_fire, "ua", None, units = "m/s")
     print('Getting v wind from open boundary conditions fireflux_med run')
-    v_open_fire = wrf.getvar(open_fire, "va", None, units = "m/s")[:, :, y_main, x_main]
+    v_open_fire = wrf.getvar(open_fire, "va", None, units = "m/s")
     print('Getting w wind from open boundary conditions fireflux_med run')
-    #w_open_fire = wrf.getvar(open_fire, "wa", None, units = "m/s")[:, :, y_main, x_main]
+    #w_open_fire = wrf.getvar(open_fire, "wa", None, units = "m/s")
     print('Getting height from open boundary conditions fireflux_med run')
-    #ht_open_fire = wrf.getvar(open_fire, "z", units="m", msl = False)[:, y_main, x_main]
+    ht_open_fire = wrf.getvar(open_fire, "z", units="m", msl = False)[:, y_main, x_main]
     print('Getting time')
     time_open_fire = open_fire.variables['XTIME'][:]
 
@@ -76,7 +76,7 @@ if not osp.exists(out_path):
     print('Getting w wind from cyclic boundary conditions fireflux_med run')
     #w_cyclic_fire = wrf.getvar(cyclic_fire, "wa", None, units = "m/s")[:, :, y_main, x_main]
     print('Getting height from cyclic boundary conditions fireflux_med run')
-    #ht_cyclic_fire = wrf.getvar(cyclic_fire, "z", units="m", msl = False)[:, y_main, x_main]
+    ht_cyclic_fire = wrf.getvar(cyclic_fire, "z", units="m", msl = False)[:, y_main, x_main]
     time_cyclic_fire = cyclic_fire.variables['XTIME'][:]
 
     print('Getting variables from no fire runs')
@@ -133,42 +133,45 @@ if not osp.exists(out_path):
     uz6 = main_tower['Uz_6m']
     ts6 = main_tower['Ts_6m']
 
-
+    print("Interpolating all the variables to the main tower heights")
     # U for open fire with set values
-    U_20_open_fire = u_open_fire[:, 8]
-    U_10_open_fire = u_open_fire[:, 4]
-    U_577_open_fire = u_open_fire[:, 2]
+    U_20_open_fire = wrf.interplevel(u_open_fire, ht_open_fire, 20)[:, y_main, x_main]
+    U_10_open_fire = wrf.interplevel(u_open_fire, ht_open_fire, 10)[:, y_main, x_main]
+    U_577_open_fire = wrf.interplevel(u_open_fire, ht_open_fire, 5.77)[:, y_main, x_main]
     # V for open fire with set values
-    V_20_open_fire = v_open_fire[:, 8]
-    V_10_open_fire = v_open_fire[:, 4]
-    V_577_open_fire = v_open_fire[:, 2]    
+    V_20_open_fire = wrf.interplevel(v_open_fire, ht_open_fire, 20)[:, y_main, x_main]
+    V_10_open_fire = wrf.interplevel(v_open_fire, ht_open_fire, 10)[:, y_main, x_main]
+    V_577_open_fire = wrf.interplevel(v_open_fire, ht_open_fire, 5.77)[:, y_main, x_main]
 
     # U for cyclic fire with set values
-    U_20_cyclic_fire = u_cyclic_fire[:, 8]
-    U_10_cyclic_fire = u_cyclic_fire[:, 4]
-    U_577_cyclic_fire = u_cyclic_fire[:, 2]
+    U_20_cyclic_fire = wrf.interplevel(u_cyclic_fire, ht_cyclic_fire, 20)[:, y_main, x_main]
+    U_10_cyclic_fire = wrf.interplevel(u_cyclic_fire, ht_cyclic_fire, 10)[:, y_main, x_main]
+    U_577_cyclic_fire = wrf.interplevel(u_cyclic_fire, ht_cyclic_fire, 5.77)[:, y_main, x_main]
     # V for cyclic fire with set values
-    V_20_cyclic_fire = v_cyclic_fire[:, 8]
-    V_10_cyclic_fire = v_cyclic_fire[:, 4]
-    V_577_cyclic_fire = v_cyclic_fire[:, 2]
+    V_20_cyclic_fire = wrf.interplevel(v_cyclic_fire, ht_cyclic_fire, 20)[:, y_main, x_main]
+    V_10_cyclic_fire = wrf.interplevel(v_cyclic_fire, ht_cyclic_fire, 10)[:, y_main, x_main]
+    V_577_cyclic_fire = wrf.interplevel(v_cyclic_fire, ht_cyclic_fire, 5.77)[:, y_main, x_main]
+
 
     # U for open no fire with set values
-    U_20_open_no_fire = u_open_no_fire[:, 8]
-    U_10_open_no_fire = u_open_no_fire[:, 4]
-    U_577_open_no_fire = u_open_no_fire[:, 2]
+    U_20_open_no_fire = wrf.interplevel(u_open_no_fire, ht_open_fire, 20)[:, y_main, x_main]
+    U_10_open_no_fire = wrf.interplevel(u_open_no_fire, ht_open_fire, 10)[:, y_main, x_main]
+    U_577_open_no_fire = wrf.interplevel(u_open_no_fire, ht_open_fire, 5.77)[:, y_main, x_main]
     # V for open no fire with set values
-    V_20_open_no_fire = v_open_no_fire[:, 8]
-    V_10_open_no_fire = v_open_no_fire[:, 4]
-    V_577_open_no_fire = v_open_no_fire[:, 2]
+    V_20_open_no_fire = wrf.interplevel(v_open_no_fire, ht_open_fire, 20)[:, y_main, x_main]
+    V_10_open_no_fire = wrf.interplevel(v_open_no_fire, ht_open_fire, 10)[:, y_main, x_main]
+    V_577_open_no_fire = wrf.interplevel(v_open_no_fire, ht_open_fire, 5.77)[:, y_main, x_main]
 
     # U for cyclic no fire with set values
-    U_20_cyclic_no_fire = u_cyclic_no_fire[:, 8]
-    U_10_cyclic_no_fire = u_cyclic_no_fire[:, 4]
-    U_577_cyclic_no_fire = u_cyclic_no_fire[:, 2]
+    U_20_cyclic_no_fire = wrf.interplevel(u_cyclic_no_fire, ht_cyclic_fire, 20)[:, y_main, x_main]
+    U_10_cyclic_no_fire = wrf.interplevel(u_cyclic_no_fire, ht_cyclic_fire, 10)[:, y_main, x_main]
+    U_577_cyclic_no_fire = wrf.interplevel(u_cyclic_no_fire, ht_cyclic_fire, 5.77)[:, y_main, x_main]
     # V for cyclic no fire with set values
-    V_20_cyclic_no_fire = v_cyclic_no_fire[:, 8]
-    V_10_cyclic_no_fire = v_cyclic_no_fire[:, 4]
-    V_577_cyclic_no_fire = v_cyclic_no_fire[:, 2]
+    V_20_cyclic_no_fire = wrf.interplevel(v_cyclic_no_fire, ht_cyclic_fire, 20)[:, y_main, x_main]
+    V_10_cyclic_no_fire = wrf.interplevel(v_cyclic_no_fire, ht_cyclic_fire, 10)[:, y_main, x_main]
+    V_577_cyclic_no_fire = wrf.interplevel(v_cyclic_no_fire, ht_cyclic_fire, 5.77)[:, y_main, x_main]
+
+
 
     ws_20_open_fire = np.sqrt((U_20_open_fire ** 2) + (V_20_open_fire ** 2))
     ws_20_cyclic_fire = np.sqrt((U_20_cyclic_fire ** 2) + (V_20_cyclic_fire ** 2))
