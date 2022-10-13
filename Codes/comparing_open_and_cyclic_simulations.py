@@ -1,14 +1,18 @@
-# The unmodified run has fiure_atms = 1, and the modified file (run_2) has the fire_atms = 0, and has cyclic boundary conditions
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Sep 27 17:13:57 2022
+
+@author: jeremybenik
+"""
+# The open_conditionsified run has fiure_atms = 1, and the cyclic_conditionsified file (run_2) has the fire_atms = 0, and has cyclic boundary conditions
 # %% Importing libraries
 print("importing libraries")
 import pandas as pd
 import netCDF4 as nc
-import xarray as xr
 import matplotlib.pyplot as plt
 import numpy as np
 import wrf
-import statistics as st
-import glob
 import pickle
 import os.path as osp
 # %% Assigning a pickle file so I don't have to run this later
@@ -16,8 +20,8 @@ out_path = 'fireflux_med_case_new_runs.pkl'
 if not osp.exists(out_path):
     # %% Reading in the files
     print('Reading in the files')
-    unmod = nc.Dataset('/home/jbenik/fireflux_med/open_boundary_condition_run/wrfout_d01_2013-01-30_15:00:00') #open boundary conditions
-    mod = nc.Dataset('/home/jbenik/fireflux_med/cyclic_boundary_conditions/wrfout_d01_2013-01-30_15:00:00') #cyclic boundary conditions
+    open_conditions = nc.Dataset('/home/jbenik/fireflux_med/open_conditions_boundary_condition_run/wrfout_d01_2013-01-30_15:00:00') #open_conditions boundary conditions
+    cyclic_conditions = nc.Dataset('/home/jbenik/fireflux_med/cyclic_boundary_conditions/wrfout_d01_2013-01-30_15:00:00') #cyclic boundary conditions
     # %% Reading in variables
 
     #Setting some values to get a graph of the wind at a certain point
@@ -37,28 +41,28 @@ if not osp.exists(out_path):
     y_south = int(119/2)
     x_south = int(115/2)
 
-    #Getting u, v, and height from open boundary conditions
-    print('Getting u wind from open boundary conditions fireflux_med run')
-    u_unmod = wrf.getvar(unmod, "ua", None, units = "m/s")
-    print('Getting v wind from open boundary conditions fireflux_med run')
-    v_unmod = wrf.getvar(unmod, "va", None, units = "m/s")
-    print('Getting w wind from open boundary conditions fireflux_med run')
-    w_unmod = wrf.getvar(unmod, "wa", None, units = "m/s")
-    print('Getting height from open boundary conditions fireflux_med run')
-    ht_unmod = wrf.getvar(unmod, "z", units="m", msl = False)
+    #Getting u, v, and height from open_conditions boundary conditions
+    print('Getting u wind from open_conditions boundary conditions fireflux_med run')
+    u_open_conditions = wrf.getvar(open_conditions, "ua", None, units = "m/s")
+    print('Getting v wind from open_conditions boundary conditions fireflux_med run')
+    v_open_conditions = wrf.getvar(open_conditions, "va", None, units = "m/s")
+    print('Getting w wind from open_conditions boundary conditions fireflux_med run')
+    w_open_conditions = wrf.getvar(open_conditions, "wa", None, units = "m/s")
+    print('Getting height from open_conditions boundary conditions fireflux_med run')
+    ht_open_conditions = wrf.getvar(open_conditions, "z", units="m", msl = False)
     
     # Getting u, v, and height from cyclic boundary conditions
-    u_mod = wrf.getvar(mod, "ua", None, units = "m/s")
+    u_cyclic_conditions = wrf.getvar(cyclic_conditions, "ua", None, units = "m/s")
     print('Getting u wind from cyclic boundary conditions fireflux_med run')
-    v_mod = wrf.getvar(mod, "va", None, units = "m/s")
+    v_cyclic_conditions = wrf.getvar(cyclic_conditions, "va", None, units = "m/s")
     print('Getting v wind from cyclic boundary conditions fireflux_med run')
-    w_mod = wrf.getvar(mod, "wa", None, units = "m/s")
+    w_cyclic_conditions = wrf.getvar(cyclic_conditions, "wa", None, units = "m/s")
     print('Getting height from cyclic boundary conditions fireflux_med run')
-    ht_mod = wrf.getvar(mod, "z", units="m", msl = False)
+    ht_cyclic_conditions = wrf.getvar(cyclic_conditions, "z", units="m", msl = False)
 
     print('Getting time')
-    time_unmod = unmod.variables['XTIME'][:]
-    time_mod = mod.variables['XTIME'][:]
+    time_open_conditions = open_conditions.variables['XTIME'][:]
+    time_cyclic_conditions = cyclic_conditions.variables['XTIME'][:]
 
     print("Reading in the data")
     print("Main tower data")
@@ -136,279 +140,278 @@ if not osp.exists(out_path):
     wss = np.sqrt((us ** 2) + (vs ** 2))
 
     # Tower Data
-    # 20 meters open boundary conditions
+    # 20 meters open_conditions boundary conditions
     print("Interpolating heights")
     print("Interpolating U at 20 meters")
-    U_h_20_unmod = wrf.interplevel(u_unmod, ht_unmod, 20)[:, y_main, x_main] # Run this for all time
+    U_h_20_open_conditions = wrf.interplevel(u_open_conditions, ht_open_conditions, 20)[:, y_main, x_main] # Run this for all time
     #save everything in the results dictionary, then with that we can analyze it some more since we will have all the data. 
     print("Interpolating V at 20 meters")
-    V_h_20_unmod = wrf.interplevel(v_unmod, ht_unmod, 20)[:, y_main, x_main]
+    V_h_20_open_conditions = wrf.interplevel(v_open_conditions, ht_open_conditions, 20)[:, y_main, x_main]
     print("Calculating Wind Speed")
-    ws_h_20_unmod = np.sqrt((U_h_20_unmod ** 2) + (V_h_20_unmod ** 2))
+    ws_h_20_open_conditions = np.sqrt((U_h_20_open_conditions ** 2) + (V_h_20_open_conditions ** 2))
     print("Interpolating W at 20 meters")
-    W_h_20_unmod = wrf.interplevel(w_unmod, ht_unmod, 20)[:, y_main, x_main]
+    W_h_20_open_conditions = wrf.interplevel(w_open_conditions, ht_open_conditions, 20)[:, y_main, x_main]
 
-    # 10 meters open boundary conditions
+    # 10 meters open_conditions boundary conditions
     print("Interpolating heights")
     print("Interpolating U at 10 meters")
-    U_h_10_unmod = wrf.interplevel(u_unmod, ht_unmod, 10)[:, y_main, x_main] # Run this for all time
+    U_h_10_open_conditions = wrf.interplevel(u_open_conditions, ht_open_conditions, 10)[:, y_main, x_main] # Run this for all time
     #save everything in the results dictionary, then with that we can analyze it some more since we will have all the data. 
     print("Interpolating V at 10 meters")
-    V_h_10_unmod = wrf.interplevel(v_unmod, ht_unmod, 10)[:, y_main, x_main]
+    V_h_10_open_conditions = wrf.interplevel(v_open_conditions, ht_open_conditions, 10)[:, y_main, x_main]
     print("Calculating Wind Speed")
-    ws_h_10_unmod = np.sqrt((U_h_10_unmod ** 2) + (V_h_10_unmod ** 2))
+    ws_h_10_open_conditions = np.sqrt((U_h_10_open_conditions ** 2) + (V_h_10_open_conditions ** 2))
     print("Interpolating W at 10 meters")
-    W_h_10_unmod = wrf.interplevel(w_unmod, ht_unmod, 10)[:, y_main, x_main]
+    W_h_10_open_conditions = wrf.interplevel(w_open_conditions, ht_open_conditions, 10)[:, y_main, x_main]
 
-    # 5.77 meters open boundary conditions
+    # 5.77 meters open_conditions boundary conditions
     print("Interpolating heights")
     print("Interpolating U at 577 meters")
-    U_h_577_unmod = wrf.interplevel(u_unmod, ht_unmod, 5.77)[:, y_main, x_main] # Run this for all time
+    U_h_577_open_conditions = wrf.interplevel(u_open_conditions, ht_open_conditions, 5.77)[:, y_main, x_main] # Run this for all time
     #save everything in the results dictionary, then with that we can analyze it some more since we will have all the data. 
     print("Interpolating V at 577 meters")
-    V_h_577_unmod = wrf.interplevel(v_unmod, ht_unmod, 5.77)[:, y_main, x_main]
+    V_h_577_open_conditions = wrf.interplevel(v_open_conditions, ht_open_conditions, 5.77)[:, y_main, x_main]
     print("Calculating Wind Speed")
-    ws_h_577_unmod = np.sqrt((U_h_577_unmod ** 2) + (V_h_577_unmod ** 2))
+    ws_h_577_open_conditions = np.sqrt((U_h_577_open_conditions ** 2) + (V_h_577_open_conditions ** 2))
     print("Interpolating W at 577 meters")
-    W_h_577_unmod = wrf.interplevel(w_unmod, ht_unmod, 5.77)[:, y_main, x_main]
+    W_h_577_open_conditions = wrf.interplevel(w_open_conditions, ht_open_conditions, 5.77)[:, y_main, x_main]
 
     # 5.33 meters West Tower
     print("Interpolating heights")
     print("Interpolating U at 533 meters")
-    West_U_h_533_unmod = wrf.interplevel(u_unmod, ht_unmod, 5.33)[:, y_west, x_west] # Run this for all time
+    West_U_h_533_open_conditions = wrf.interplevel(u_open_conditions, ht_open_conditions, 5.33)[:, y_west, x_west] # Run this for all time
     #save everything in the results dictionary, then with that we can analyze it some more since we will have all the data. 
     print("Interpolating V at 533 meters")
-    West_V_h_533_unmod = wrf.interplevel(v_unmod, ht_unmod, 5.33)[:, y_west, x_west]
+    West_V_h_533_open_conditions = wrf.interplevel(v_open_conditions, ht_open_conditions, 5.33)[:, y_west, x_west]
     print("Calculating Wind Speed")
-    West_ws_h_533_unmod = np.sqrt((West_U_h_533_unmod ** 2) + (West_V_h_533_unmod ** 2))
+    West_ws_h_533_open_conditions = np.sqrt((West_U_h_533_open_conditions ** 2) + (West_V_h_533_open_conditions ** 2))
     print("Interpolating W at 533 meters")
-    West_W_h_533_unmod = wrf.interplevel(w_unmod, ht_unmod, 5.33)[:, y_west, x_west]
+    West_W_h_533_open_conditions = wrf.interplevel(w_open_conditions, ht_open_conditions, 5.33)[:, y_west, x_west]
     print("Interpolating U at 533 meters")
 
     #5.33 meters South Tower
     print("Interpolating heights")
     print("Interpolating U at 533 meters")
-    south_U_h_533_unmod = wrf.interplevel(u_unmod, ht_unmod, 5.33)[:, y_south, x_south] # Run this for all time
+    south_U_h_533_open_conditions = wrf.interplevel(u_open_conditions, ht_open_conditions, 5.33)[:, y_south, x_south] # Run this for all time
     #save everything in the results dictionary, then with that we can analyze it some more since we will have all the data. 
     print("Interpolating V at 533 meters")
-    south_V_h_533_unmod = wrf.interplevel(v_unmod, ht_unmod, 5.33)[:, y_south, x_south]
+    south_V_h_533_open_conditions = wrf.interplevel(v_open_conditions, ht_open_conditions, 5.33)[:, y_south, x_south]
     print("Calculating Wind Speed")
-    south_ws_h_533_unmod = np.sqrt((south_U_h_533_unmod ** 2) + (south_V_h_533_unmod ** 2))
+    south_ws_h_533_open_conditions = np.sqrt((south_U_h_533_open_conditions ** 2) + (south_V_h_533_open_conditions ** 2))
     print("Interpolating W at 533 meters")
-    south_W_h_533_unmod = wrf.interplevel(w_unmod, ht_unmod, 5.33)[:, y_south, x_south]
+    south_W_h_533_open_conditions = wrf.interplevel(w_open_conditions, ht_open_conditions, 5.33)[:, y_south, x_south]
     print("Interpolating U at 533 meters")
 
     #5.28 meters east Tower
     print("Interpolating heights")
     print("Interpolating U at 528 meters")
-    east_U_h_528_unmod = wrf.interplevel(u_unmod, ht_unmod, 5.28)[:, y_east, x_east] # Run this for all time
+    east_U_h_528_open_conditions = wrf.interplevel(u_open_conditions, ht_open_conditions, 5.28)[:, y_east, x_east] # Run this for all time
     #save everything in the results dictionary, then with that we can analyze it some more since we will have all the data. 
     print("Interpolating V at 528 meters")
-    east_V_h_528_unmod = wrf.interplevel(v_unmod, ht_unmod, 5.28)[:, y_east, x_east]
+    east_V_h_528_open_conditions = wrf.interplevel(v_open_conditions, ht_open_conditions, 5.28)[:, y_east, x_east]
     print("Calculating Wind Speed")
-    east_ws_h_528_unmod = np.sqrt((east_U_h_528_unmod ** 2) + (east_V_h_528_unmod ** 2))
+    east_ws_h_528_open_conditions = np.sqrt((east_U_h_528_open_conditions ** 2) + (east_V_h_528_open_conditions ** 2))
     print("Interpolating W at 528 meters")
-    east_W_h_528_unmod = wrf.interplevel(w_unmod, ht_unmod, 5.28)[:, y_east, x_east]
+    east_W_h_528_open_conditions = wrf.interplevel(w_open_conditions, ht_open_conditions, 5.28)[:, y_east, x_east]
     print("Interpolating U at 528 meters")
 
-    #this is for the modified case now
+    #this is for the cyclic_conditionsified case now
     # 20 meters
     print("Interpolating heights")
     print("Interpolating U at 20 meters")
-    U_h_20_mod = wrf.interplevel(u_mod, ht_mod, 20)[:, y_main, x_main] # Run this for all time
+    U_h_20_cyclic_conditions = wrf.interplevel(u_cyclic_conditions, ht_cyclic_conditions, 20)[:, y_main, x_main] # Run this for all time
     #save everything in the results dictionary, then with that we can analyze it some more since we will have all the data. 
     print("Interpolating V at 20 meters")
-    V_h_20_mod = wrf.interplevel(v_mod, ht_mod, 20)[:, y_main, x_main]
+    V_h_20_cyclic_conditions = wrf.interplevel(v_cyclic_conditions, ht_cyclic_conditions, 20)[:, y_main, x_main]
     print("Calculating Wind Speed")
-    ws_h_20_mod = np.sqrt((U_h_20_mod ** 2) + (V_h_20_mod ** 2))
+    ws_h_20_cyclic_conditions = np.sqrt((U_h_20_cyclic_conditions ** 2) + (V_h_20_cyclic_conditions ** 2))
     print("Interpolating W at 20 meters")
-    W_h_20_mod = wrf.interplevel(w_mod, ht_mod, 20)[:, y_main, x_main]
+    W_h_20_cyclic_conditions = wrf.interplevel(w_cyclic_conditions, ht_cyclic_conditions, 20)[:, y_main, x_main]
 
     # 10 meters
     print("Interpolating heights")
     print("Interpolating U at 10 meters")
-    U_h_10_mod = wrf.interplevel(u_mod, ht_mod, 10)[:, y_main, x_main] # Run this for all time
+    U_h_10_cyclic_conditions = wrf.interplevel(u_cyclic_conditions, ht_cyclic_conditions, 10)[:, y_main, x_main] # Run this for all time
     #save everything in the results dictionary, then with that we can analyze it some more since we will have all the data. 
     print("Interpolating V at 10 meters")
-    V_h_10_mod = wrf.interplevel(v_mod, ht_mod, 10)[:, y_main, x_main]
+    V_h_10_cyclic_conditions = wrf.interplevel(v_cyclic_conditions, ht_cyclic_conditions, 10)[:, y_main, x_main]
     print("Calculating Wind Speed")
-    ws_h_10_mod = np.sqrt((U_h_10_mod ** 2) + (V_h_10_mod ** 2))
+    ws_h_10_cyclic_conditions = np.sqrt((U_h_10_cyclic_conditions ** 2) + (V_h_10_cyclic_conditions ** 2))
     print("Interpolating W at 10 meters")
-    W_h_10_mod = wrf.interplevel(w_mod, ht_mod, 10)[:, y_main, x_main]
+    W_h_10_cyclic_conditions = wrf.interplevel(w_cyclic_conditions, ht_cyclic_conditions, 10)[:, y_main, x_main]
 
     # 5.77 meters
     print("Interpolating heights")
     print("Interpolating U at 577 meters")
-    U_h_577_mod = wrf.interplevel(u_mod, ht_mod, 5.77)[:, y_main, x_main] # Run this for all time
+    U_h_577_cyclic_conditions = wrf.interplevel(u_cyclic_conditions, ht_cyclic_conditions, 5.77)[:, y_main, x_main] # Run this for all time
     #save everything in the results dictionary, then with that we can analyze it some more since we will have all the data. 
     print("Interpolating V at 577 meters")
-    V_h_577_mod = wrf.interplevel(v_mod, ht_mod, 5.77)[:, y_main, x_main]
+    V_h_577_cyclic_conditions = wrf.interplevel(v_cyclic_conditions, ht_cyclic_conditions, 5.77)[:, y_main, x_main]
     print("Calculating Wind Speed")
-    ws_h_577_mod = np.sqrt((U_h_577_mod ** 2) + (V_h_577_mod ** 2))
+    ws_h_577_cyclic_conditions = np.sqrt((U_h_577_cyclic_conditions ** 2) + (V_h_577_cyclic_conditions ** 2))
     print("Interpolating W at 577 meters")
-    W_h_577_mod = wrf.interplevel(w_mod, ht_mod, 5.77)[:, y_main, x_main] 
+    W_h_577_cyclic_conditions = wrf.interplevel(w_cyclic_conditions, ht_cyclic_conditions, 5.77)[:, y_main, x_main] 
     print("Interpolating U at 577 meters")
 
     # 5.33 meters West Tower
     print("Interpolating heights")
     print("Interpolating U at 533 meters")
-    West_U_h_533_mod = wrf.interplevel(u_mod, ht_mod, 5.33)[:, y_west, x_west] # Run this for all time
+    West_U_h_533_cyclic_conditions = wrf.interplevel(u_cyclic_conditions, ht_cyclic_conditions, 5.33)[:, y_west, x_west] # Run this for all time
     #save everything in the results dictionary, then with that we can analyze it some more since we will have all the data. 
     print("Interpolating V at 533 meters")
-    West_V_h_533_mod = wrf.interplevel(v_mod, ht_mod, 5.33)[:, y_west, x_west]
+    West_V_h_533_cyclic_conditions = wrf.interplevel(v_cyclic_conditions, ht_cyclic_conditions, 5.33)[:, y_west, x_west]
     print("Calculating Wind Speed")
-    West_ws_h_533_mod = np.sqrt((West_U_h_533_mod ** 2) + (West_V_h_533_mod ** 2))
+    West_ws_h_533_cyclic_conditions = np.sqrt((West_U_h_533_cyclic_conditions ** 2) + (West_V_h_533_cyclic_conditions ** 2))
     print("Interpolating W at 533 meters")
-    West_W_h_533_mod = wrf.interplevel(w_mod, ht_mod, 5.33)[:, y_west, x_west]
+    West_W_h_533_cyclic_conditions = wrf.interplevel(w_cyclic_conditions, ht_cyclic_conditions, 5.33)[:, y_west, x_west]
     print("Interpolating U at 533 meters")
 
     #5.33 meters South Tower
     print("Interpolating heights")
     print("Interpolating U at 533 meters")
-    south_U_h_533_mod = wrf.interplevel(u_mod, ht_mod, 5.33)[:, y_south, x_south] # Run this for all time
+    south_U_h_533_cyclic_conditions = wrf.interplevel(u_cyclic_conditions, ht_cyclic_conditions, 5.33)[:, y_south, x_south] # Run this for all time
     #save everything in the results dictionary, then with that we can analyze it some more since we will have all the data. 
     print("Interpolating V at 533 meters")
-    south_V_h_533_mod = wrf.interplevel(v_mod, ht_mod, 5.33)[:, y_south, x_south]
+    south_V_h_533_cyclic_conditions = wrf.interplevel(v_cyclic_conditions, ht_cyclic_conditions, 5.33)[:, y_south, x_south]
     print("Calculating Wind Speed")
-    south_ws_h_533_mod = np.sqrt((south_U_h_533_mod ** 2) + (south_V_h_533_mod ** 2))
+    south_ws_h_533_cyclic_conditions = np.sqrt((south_U_h_533_cyclic_conditions ** 2) + (south_V_h_533_cyclic_conditions ** 2))
     print("Interpolating W at 533 meters")
-    south_W_h_533_mod = wrf.interplevel(w_mod, ht_mod, 5.33)[:, y_south, x_south]
+    south_W_h_533_cyclic_conditions = wrf.interplevel(w_cyclic_conditions, ht_cyclic_conditions, 5.33)[:, y_south, x_south]
     print("Interpolating U at 533 meters")
 
     #5.28 meters east Tower
     print("Interpolating heights")
     print("Interpolating U at 528 meters")
-    east_U_h_528_mod = wrf.interplevel(u_mod, ht_mod, 5.28)[:, y_east, x_east] # Run this for all time
+    east_U_h_528_cyclic_conditions = wrf.interplevel(u_cyclic_conditions, ht_cyclic_conditions, 5.28)[:, y_east, x_east] # Run this for all time
     #save everything in the results dictionary, then with that we can analyze it some more since we will have all the data. 
     print("Interpolating V at 528 meters")
-    east_V_h_528_mod = wrf.interplevel(v_mod, ht_mod, 5.28)[:, y_east, x_east]
+    east_V_h_528_cyclic_conditions = wrf.interplevel(v_cyclic_conditions, ht_cyclic_conditions, 5.28)[:, y_east, x_east]
     print("Calculating Wind Speed")
-    east_ws_h_528_mod = np.sqrt((east_U_h_528_mod ** 2) + (east_V_h_528_mod ** 2))
+    east_ws_h_528_cyclic_conditions = np.sqrt((east_U_h_528_cyclic_conditions ** 2) + (east_V_h_528_cyclic_conditions ** 2))
     print("Interpolating W at 528 meters")
-    east_W_h_528_mod = wrf.interplevel(w_mod, ht_mod, 5.28)[:, y_east, x_east]
+    east_W_h_528_cyclic_conditions = wrf.interplevel(w_cyclic_conditions, ht_cyclic_conditions, 5.28)[:, y_east, x_east]
 
     time_main = main_tower['TIMESTAMP']
     time_short = np.arange(0, 720)
-    results = {'time_unmod':time_unmod, 'time_mod':time_mod,
-    'ws_h_20_mod':ws_h_20_mod, 'W_h_20_mod':W_h_20_mod,
-    'ws_h_10_mod':ws_h_10_mod, 'W_h_10_mod':W_h_10_mod,
-    'ws_h_577_mod':ws_h_577_mod, 'W_h_577_mod':W_h_577_mod,
-    'West_ws_h_533_mod':West_ws_h_533_mod, 'West_W_h_533_mod':West_W_h_533_mod,
-    'south_ws_h_533_mod':south_ws_h_533_mod, 'south_W_h_533_mod':south_W_h_533_mod,
-    'east_ws_h_528_mod':east_ws_h_528_mod, 'east_W_h_528_mod':east_W_h_528_mod,
-    'ws_h_20_unmod':ws_h_20_unmod, 'W_h_20_unmod':W_h_20_unmod,
-    'ws_h_10_unmod':ws_h_10_unmod, 'W_h_10_unmod':W_h_10_unmod,
-    'ws_h_577_unmod':ws_h_577_unmod, 'W_h_577_unmod':W_h_577_unmod,
-    'West_ws_h_533_unmod':West_ws_h_533_unmod, 'West_W_h_533_unmod':West_W_h_533_unmod,
-    'south_ws_h_533_unmod':south_ws_h_533_unmod, 'south_W_h_533_unmod':south_W_h_533_unmod,
-    'east_ws_h_528_unmod':east_ws_h_528_unmod, 'east_W_h_528_unmod':east_W_h_528_unmod,
+    results = {'time_open_conditions':time_open_conditions, 'time_cyclic_conditions':time_cyclic_conditions,
+    'ws_h_20_cyclic_conditions':ws_h_20_cyclic_conditions, 'W_h_20_cyclic_conditions':W_h_20_cyclic_conditions,
+    'ws_h_10_cyclic_conditions':ws_h_10_cyclic_conditions, 'W_h_10_cyclic_conditions':W_h_10_cyclic_conditions,
+    'ws_h_577_cyclic_conditions':ws_h_577_cyclic_conditions, 'W_h_577_cyclic_conditions':W_h_577_cyclic_conditions,
+    'West_ws_h_533_cyclic_conditions':West_ws_h_533_cyclic_conditions, 'West_W_h_533_cyclic_conditions':West_W_h_533_cyclic_conditions,
+    'south_ws_h_533_cyclic_conditions':south_ws_h_533_cyclic_conditions, 'south_W_h_533_cyclic_conditions':south_W_h_533_cyclic_conditions,
+    'east_ws_h_528_cyclic_conditions':east_ws_h_528_cyclic_conditions, 'east_W_h_528_cyclic_conditions':east_W_h_528_cyclic_conditions,
+    'ws_h_20_open_conditions':ws_h_20_open_conditions, 'W_h_20_open_conditions':W_h_20_open_conditions,
+    'ws_h_10_open_conditions':ws_h_10_open_conditions, 'W_h_10_open_conditions':W_h_10_open_conditions,
+    'ws_h_577_open_conditions':ws_h_577_open_conditions, 'W_h_577_open_conditions':W_h_577_open_conditions,
+    'West_ws_h_533_open_conditions':West_ws_h_533_open_conditions, 'West_W_h_533_open_conditions':West_W_h_533_open_conditions,
+    'south_ws_h_533_open_conditions':south_ws_h_533_open_conditions, 'south_W_h_533_open_conditions':south_W_h_533_open_conditions,
+    'east_ws_h_528_open_conditions':east_ws_h_528_open_conditions, 'east_W_h_528_open_conditions':east_W_h_528_open_conditions,
     'ws_20':ws_20, 'ws_10':ws_10,'ws_6':ws_6, 'uz20':uz20, 'uz10':uz10, 'uz6':uz6,
     'wsw':wsw, 'ww':ww, 'wss':wss, 'ws':ws, 'wse':wse, 'we':we,
     'time_main':time_main, 'time_short':time_short} #put the other variables in here such as wsw and ww
 
-    with open(out_path, 'wb') as f:
+    with open_conditions(out_path, 'wb') as f:
         pickle.dump(results, f)
 else:
-    with open(out_path, 'rb') as f:
+    with open_conditions(out_path, 'rb') as f:
         results = pickle.load(f)
     locals().update(results)
-# %% Creating the figure
-#time_main = np.arange(0, 1020.10, .1)
+# %% Plotting the Main Tower
 fig, ax = plt.subplots(3, figsize = (12, 8))
 
 # Main tower
 
 #20 meters
-ax[0].plot(time_mod * 60, ws_h_20_mod, label = 'Cyclic Boundary Conditions', color = 'blue')
-ax[0].plot(time_unmod * 60, ws_h_20_unmod, label = 'Open Boundary Conditions', color = 'red')
+ax[0].plot(time_cyclic_conditions * 60, ws_h_20_cyclic_conditions, label = 'Cyclic Boundary Conditions', color = 'blue')
+ax[0].plot(time_open_conditions * 60, ws_h_20_open_conditions, label = 'open_conditions Boundary Conditions', color = 'red')
 ax[0].plot(time_main, ws_20, label = 'Observation Winds', color = 'green')
 ax[0].set_xlabel('Time (Seconds)', fontsize =12, fontweight = 'bold')
 ax[0].set_ylabel('Wind Speed (m/s)', fontsize = 12, fontweight = 'bold')
-ax[0].set_title('20m Wind Speeds (Open and Cyclic Boundary Conditions', fontsize = 18, fontweight = 'bold')
+ax[0].set_title('20m Wind Speeds (open_conditions and Cyclic Boundary Conditions', fontsize = 18, fontweight = 'bold')
 ax[0].legend()
 ax[0].grid()
 # 10 meters
-ax[1].plot(time_mod * 60, ws_h_10_mod, label = 'Cyclic Boundary Conditions', color = 'blue')
-ax[1].plot(time_unmod * 60, ws_h_10_unmod, label = 'Open Boundary Conditions', color = 'red')
+ax[1].plot(time_cyclic_conditions * 60, ws_h_10_cyclic_conditions, label = 'Cyclic Boundary Conditions', color = 'blue')
+ax[1].plot(time_open_conditions * 60, ws_h_10_open_conditions, label = 'open_conditions Boundary Conditions', color = 'red')
 ax[1].plot(time_main, ws_10, label = 'Observation Winds', color = 'green')
 ax[1].set_xlabel('Time (Seconds)', fontsize =12, fontweight = 'bold')
 ax[1].set_ylabel('Wind Speed (m/s)', fontsize = 12, fontweight = 'bold')
-ax[1].set_title('10m Wind Speeds (Open and Cyclic Boundary Conditions', fontsize = 18, fontweight = 'bold')
+ax[1].set_title('10m Wind Speeds (open_conditions and Cyclic Boundary Conditions', fontsize = 18, fontweight = 'bold')
 ax[1].legend()
 ax[1].grid()
 # 5.77 meters
-ax[2].plot(time_mod * 60, ws_h_577_mod, label = 'Cyclic Boundary Conditions', color = 'blue')
-ax[2].plot(time_unmod * 60, ws_h_577_unmod, label = 'Open Boundary Conditions', color = 'red')
+ax[2].plot(time_cyclic_conditions * 60, ws_h_577_cyclic_conditions, label = 'Cyclic Boundary Conditions', color = 'blue')
+ax[2].plot(time_open_conditions * 60, ws_h_577_open_conditions, label = 'open_conditions Boundary Conditions', color = 'red')
 ax[2].plot(time_main, ws_6, label = 'Observation Winds', color = 'green')
 ax[2].set_xlabel('Time (Seconds)', fontsize =12, fontweight = 'bold')
 ax[2].set_ylabel('Wind Speed (m/s)', fontsize = 12, fontweight = 'bold')
-ax[2].set_title('5.77m Wind Speeds (Open and Cyclic Boundary Conditions', fontsize = 18, fontweight = 'bold')
+ax[2].set_title('5.77m Wind Speeds (open_conditions and Cyclic Boundary Conditions', fontsize = 18, fontweight = 'bold')
 ax[2].legend()
 ax[2].grid()
 plt.tight_layout()
 plt.show()
 
-# %% this is plotting the main tower without any observation winds
+# %% Main Tower without observations
 fig, ax = plt.subplots(3, figsize = (12, 8))
 
 # Main tower
 
 #20 meters
-ax[0].plot(time_mod * 60, ws_h_20_mod, label = 'Cyclic Boundary Conditions', color = 'blue')
-ax[0].plot(time_unmod * 60, ws_h_20_unmod, label = 'Open Boundary Conditions', color = 'red', linestyle = '--')
+ax[0].plot(time_cyclic_conditions * 60, ws_h_20_cyclic_conditions, label = 'Cyclic Boundary Conditions', color = 'blue')
+ax[0].plot(time_open_conditions * 60, ws_h_20_open_conditions, label = 'open_conditions Boundary Conditions', color = 'red', linestyle = '--')
 ax[0].set_xlabel('Time (Seconds)', fontsize =12, fontweight = 'bold')
 ax[0].set_ylabel('Wind Speed (m/s)', fontsize = 12, fontweight = 'bold')
-ax[0].set_title('20m Wind Speeds (Open and Cyclic Boundary Conditions)', fontsize = 18, fontweight = 'bold')
+ax[0].set_title('20m Wind Speeds (open_conditions and Cyclic Boundary Conditions)', fontsize = 18, fontweight = 'bold')
 ax[0].legend()
 ax[0].grid()
 ax[0].set_xlim(0, 1000)
 # 10 meters
-ax[1].plot(time_mod * 60, ws_h_10_mod, label = 'Cyclic Boundary Conditions', color = 'blue')
-ax[1].plot(time_unmod * 60, ws_h_10_unmod, label = 'Open Boundary Conditions', color = 'red', linestyle = '--')
+ax[1].plot(time_cyclic_conditions * 60, ws_h_10_cyclic_conditions, label = 'Cyclic Boundary Conditions', color = 'blue')
+ax[1].plot(time_open_conditions * 60, ws_h_10_open_conditions, label = 'open_conditions Boundary Conditions', color = 'red', linestyle = '--')
 ax[1].set_xlabel('Time (Seconds)', fontsize =12, fontweight = 'bold')
 ax[1].set_ylabel('Wind Speed (m/s)', fontsize = 12, fontweight = 'bold')
-ax[1].set_title('10m Wind Speeds (Open and Cyclic Boundary Conditions)', fontsize = 18, fontweight = 'bold')
+ax[1].set_title('10m Wind Speeds (open_conditions and Cyclic Boundary Conditions)', fontsize = 18, fontweight = 'bold')
 ax[1].legend()
 ax[1].grid()
 ax[1].set_xlim(0, 1000)
 # 5.77 meters
-ax[2].plot(time_mod * 60, ws_h_577_mod, label = 'Cyclic Boundary Conditions', color = 'blue')
-ax[2].plot(time_unmod * 60, ws_h_577_unmod, label = 'Open Boundary Conditions', color = 'red', linestyle = '--')
+ax[2].plot(time_cyclic_conditions * 60, ws_h_577_cyclic_conditions, label = 'Cyclic Boundary Conditions', color = 'blue')
+ax[2].plot(time_open_conditions * 60, ws_h_577_open_conditions, label = 'open_conditions Boundary Conditions', color = 'red', linestyle = '--')
 ax[2].set_xlabel('Time (Seconds)', fontsize =12, fontweight = 'bold')
 ax[2].set_ylabel('Wind Speed (m/s)', fontsize = 12, fontweight = 'bold')
-ax[2].set_title('5.77m Wind Speeds (Open and Cyclic Boundary Conditions)', fontsize = 18, fontweight = 'bold')
+ax[2].set_title('5.77m Wind Speeds (open_conditions and Cyclic Boundary Conditions)', fontsize = 18, fontweight = 'bold')
 ax[2].legend()
 ax[2].grid()
 ax[2].set_xlim(0, 1000)
 plt.tight_layout()
 plt.show()
-# %% Creating the figure
+# %% Short Tower Plots
 fig, ax = plt.subplots(3, figsize = (12, 8))
 
 # Short tower
 
 # West 5.33 meters
-ax[0].plot(time_mod * 60, West_ws_h_533_mod, label = 'Cyclic Boundary Conditions', color = 'blue')
-ax[0].plot(time_unmod * 60, West_ws_h_533_unmod, label = 'Open Boundary Conditions', color = 'red', linestyle = '--')
+ax[0].plot(time_cyclic_conditions * 60, West_ws_h_533_cyclic_conditions, label = 'Cyclic Boundary Conditions', color = 'blue')
+ax[0].plot(time_open_conditions * 60, West_ws_h_533_open_conditions, label = 'open_conditions Boundary Conditions', color = 'red', linestyle = '--')
 ax[0].set_xlabel('Time (Seconds)', fontsize =12, fontweight = 'bold')
 ax[0].set_ylabel('Wind Speed (m/s)', fontsize = 12, fontweight = 'bold')
-ax[0].set_title('West Tower Wind Speeds (Open and Cyclic Boundary Conditions', fontsize = 18, fontweight = 'bold')
+ax[0].set_title('West Tower Wind Speeds (open_conditions and Cyclic Boundary Conditions', fontsize = 18, fontweight = 'bold')
 ax[0].grid()
 ax[0].legend()
 # South 5.33 meters
-ax[1].plot(time_mod * 60, south_ws_h_533_mod, label = 'Cyclic Boundary Conditions', color = 'blue')
-ax[1].plot(time_unmod * 60, south_ws_h_533_unmod, label = 'Open Boundary Conditions', color = 'red', linestyle = '--')
+ax[1].plot(time_cyclic_conditions * 60, south_ws_h_533_cyclic_conditions, label = 'Cyclic Boundary Conditions', color = 'blue')
+ax[1].plot(time_open_conditions * 60, south_ws_h_533_open_conditions, label = 'open_conditions Boundary Conditions', color = 'red', linestyle = '--')
 ax[1].set_xlabel('Time (Seconds)', fontsize =12, fontweight = 'bold')
 ax[1].set_ylabel('Wind Speed (m/s)', fontsize = 12, fontweight = 'bold')
-ax[1].set_title('South Tower Wind Speeds (Open and Cyclic Boundary Conditions', fontsize = 18, fontweight = 'bold')
+ax[1].set_title('South Tower Wind Speeds (open_conditions and Cyclic Boundary Conditions', fontsize = 18, fontweight = 'bold')
 ax[1].grid()
 ax[1].legend()
 # east 5.28 meters
-ax[2].plot(time_mod * 60, east_ws_h_528_mod, label = 'Cyclic Boundary Conditions', color = 'blue')
-ax[2].plot(time_unmod * 60, east_ws_h_528_unmod, label = 'Open Boundary Conditions', color = 'red', linestyle = '--')
+ax[2].plot(time_cyclic_conditions * 60, east_ws_h_528_cyclic_conditions, label = 'Cyclic Boundary Conditions', color = 'blue')
+ax[2].plot(time_open_conditions * 60, east_ws_h_528_open_conditions, label = 'open_conditions Boundary Conditions', color = 'red', linestyle = '--')
 ax[2].set_xlabel('Time (Seconds)', fontsize =12, fontweight = 'bold')
 ax[2].set_ylabel('Wind Speed (m/s)', fontsize = 12, fontweight = 'bold')
-ax[2].set_title('East Tower Wind Speeds (Open and Cyclic Boundary Conditions', fontsize = 18, fontweight = 'bold')
+ax[2].set_title('East Tower Wind Speeds (open_conditions and Cyclic Boundary Conditions', fontsize = 18, fontweight = 'bold')
 ax[2].grid()
 ax[2].legend()
 plt.tight_layout()
