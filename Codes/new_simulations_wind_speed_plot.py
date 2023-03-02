@@ -15,41 +15,28 @@ import pickle
 import os.path as osp
 import wrf
 import statistics as st
-<<<<<<< HEAD
+
 # %% Reading in the files
-file_1 = nc.Dataset('/home/jbenik/fireflux_med/simulations/Mod_SODAR_smoothed_out_input_sounding_9_7_22/wrfout_d01_2013-01-30_14:40:00')
-file_2 = nc.Dataset('/home/jbenik/fireflux_med/simulations/Mod_SODAR_smoothed_out_input_sounding_9_7_22/wrfout_d01_2013-01-30_14:56:40')
-file_3 = nc.Dataset('/home/jbenik/fireflux_med/simulations/Mod_SODAR_smoothed_out_input_sounding_9_7_22/wrfout_d01_2013-01-30_15:04:01')
+# file_1 = nc.Dataset('/home/jbenik/fireflux_med/simulations/Mod_SODAR_smoothed_out_input_sounding_9_7_22/wrfout_d01_2013-01-30_14:40:00')
+# file_2 = nc.Dataset('/home/jbenik/fireflux_med/simulations/Mod_SODAR_smoothed_out_input_sounding_9_7_22/wrfout_d01_2013-01-30_14:56:40')
+# file_3 = nc.Dataset('/home/jbenik/fireflux_med/simulations/Mod_SODAR_smoothed_out_input_sounding_9_7_22/wrfout_d01_2013-01-30_15:04:01')
 #file_3 = nc.Dataset('/home/jbenik/fireflux_med/simulations/modified_heat_extinction_input_sounding/wrfout_d01_2013-01-30_15:13:01')
 #file_4 = nc.Dataset('/home/jbenik/fireflux_med/simulations/modified_heat_extinction_input_sounding/wrfout_d01_2013-01-30_15:29:41')
+file_1 = nc.Dataset('/Users/jeremybenik/Research_Files/truncated_wrfouts/fire_atms_1/wrfout_d01_2013-01-30_15:00:01')
 
 # %% Importing the files
 print('Running this here so I can get it all done in one run')
 print('Getting u from the first wrfout file')
-u_main_1 = wrf.getvar(file_1, "ua", None, units = "m/s")[:, :, :, :]
-print('Getting u from the second wrfout file')
-u_main_2 = wrf.getvar(file_2, "ua", None, units = "m/s")[:, :, :, :]
-#print('Getting u from the third wrfout file')
-u_main_3 = wrf.getvar(file_3, "ua", None, units = "m/s")[36::, :, :, :]
-#print('Getting u from the fourth wrfout file')
-#u_main_4 = wrf.getvar(file_4, "ua", None, units = "m/s")[:, :, :, :]
+u_main = wrf.getvar(file_1, "ua", None, units = "m/s")[:, :, :, :]
 
-u_main = np.concatenate((u_main_1, u_main_2, u_main_3), axis = 0)
 print('Reading in height from file 1')
 ht_1 = wrf.getvar(file_1, "z", units="m", msl = False)[:, :, :]
 print('Getting v from the first wrfout file')
-v_main_1 = wrf.getvar(file_1, "va", None, units = "m/s")[:, :, :, :]
-print('Getting v from the second wrfout file')
-v_main_2 = wrf.getvar(file_2, "va", None, units = "m/s")[:, :, :, :]
-print('Getting v from the third wrfout file')
-v_main_3 = wrf.getvar(file_3, "va", None, units = "m/s")[36::, :, :, :]
-# print('Getting v from the fourth wrfout file')
-# v_main_4 = wrf.getvar(file_4, "va", None, units = "m/s")[:, :, :, :]
-# print('Getting v from the fifth wrfout file')
-v_main = np.concatenate((v_main_1, v_main_2, v_main_3), axis = 0)
+v_main = wrf.getvar(file_1, "va", None, units = "m/s")[:, :, :, :]
+
 # %%
-y_main = int(190 / 2)
-x_main = int(93 / 2)
+y_main = 190
+x_main = 93 
 
 # East tower
 y_east = 158
@@ -62,6 +49,24 @@ x_west = 94
 # South tower
 y_south = 119
 x_south = 115
+# %% Interpolating
+
+u_main_577 = wrf.interplevel(u_main, ht_1, 5.77)[:, y_main, x_main]
+v_main_577 = wrf.interplevel(v_main, ht_1, 5.77)[:, y_main, x_main]
+
+ws_h_577 = np.sqrt(u_main_577 ** 2 + v_main_577 ** 2)
+
+u_main_10 = wrf.interplevel(u_main, ht_1, 10)[:, y_main, x_main]
+v_main_10 = wrf.interplevel(v_main, ht_1, 10)[:, y_main, x_main]
+
+ws_h_10 = np.sqrt(u_main_10 ** 2 + v_main_10 ** 2)
+
+u_main_20 = wrf.interplevel(u_main, ht_1, 20)[:, y_main, x_main]
+v_main_20 = wrf.interplevel(v_main, ht_1, 20)[:, y_main, x_main]
+
+ws_h_20 = np.sqrt(u_main_20 ** 2 + v_main_20 ** 2)
+
+
 # %% Main Tower
 out_path = 'pickle_files/main_tower_U_smoothed_sodar.pkl'
 if not osp.exists(out_path):
@@ -210,7 +215,6 @@ ws_h_577 = np.sqrt((U_h_577 ** 2) + (V_h_577 ** 2))
 ws_h_533_west = np.sqrt((U_h_533_West ** 2) + (V_h_533_West ** 2))
 ws_h_533_south = np.sqrt((U_h_533_south ** 2) + (V_h_533_south ** 2))
 ws_h_528_east = np.sqrt((U_h_528_east ** 2) + (V_h_528_east ** 2))
-=======
 import glob
 # %% test case
 path = 'pickle_files/10_10_simulation/'
@@ -396,9 +400,9 @@ ws_h_577 = np.sqrt((U_h_577 ** 2) + (V_h_577 ** 2))
 ws_east = np.sqrt((U_east_528 ** 2) + (V_east_528 ** 2))
 ws_south = np.sqrt((U_south_533 ** 2) + (V_south_533 ** 2))
 ws_west = np.sqrt((U_west_533 ** 2) + (V_west_533 ** 2))
->>>>>>> ember_files
+
 # %% Creating the plots
-main_tower1 = pd.read_csv('/home/jbenik/FireFlux2/Codes_and_Data/Data/Main_Tower_Data/Proc_FF2_10HzMTdespiked_rotated.csv', parse_dates=['TIMESTAMP'], skiprows = (0, 2, 3))
+main_tower1 = pd.read_csv('../../FireFlux2/FireFlux2-main/Data/Main_Tower_Data/Proc_FF2_10HzMTdespiked_rotated.csv', parse_dates=['TIMESTAMP'], skiprows = (0, 2, 3))
 
 main_tower = main_tower1.truncate(before= np.where(main_tower1['TIMESTAMP'] == '1/30/2013  15:00:00')[0][0], 
                     after=np.where(main_tower1['TIMESTAMP'] == '1/30/2013  15:30:00')[0][0])
@@ -427,23 +431,22 @@ ws_6 = np.sqrt((ux6 ** 2) + (uy6 ** 2))
 uz6 = main_tower['Uz_6m']
 ts6 = main_tower['Ts_6m']
 
-df_w1 = pd.read_csv('/home/jbenik/FireFlux2/Codes_and_Data/Data/Short_Tower_Data/Proc_FF2_1HzSTWdespikedrotated.csv')
+df_w1 = pd.read_csv('../../FireFlux2/FireFlux2-main/Data/Short_Tower_Data/Proc_FF2_1HzSTWdespikedrotated.csv')
 
-<<<<<<< HEAD
+
 # %% Plotting
 fig, ax = plt.subplots(3, figsize = (12,10))
 n = 600
 
-=======
 df_w = df_w1.truncate(before= np.where(df_w1['TIMESTAMP'] == '1/30/2013 15:00')[0][0], 
                     after=np.where(df_w1['TIMESTAMP'] == '1/30/2013 15:30')[0][0])
 
-df_e1 = pd.read_csv('/home/jbenik/FireFlux2/Codes_and_Data/Data/Short_Tower_Data/Proc_FF2_1HzSTEdespikedrotated.csv')
+df_e1 = pd.read_csv('../../FireFlux2/FireFlux2-main/Data/Short_Tower_Data/Proc_FF2_1HzSTEdespikedrotated.csv')
 
 df_e = df_e1.truncate(before= np.where(df_e1['TIMESTAMP'] == '1/30/2013 15:00')[0][0], 
                     after=np.where(df_e1['TIMESTAMP'] == '1/30/2013 15:30')[0][0])
 
-df_s1 = pd.read_csv('/home/jbenik/FireFlux2/Codes_and_Data/Data/Short_Tower_Data/Proc_FF2_1HzSTSdespikedrotated.csv')
+df_s1 = pd.read_csv('../../FireFlux2/FireFlux2-main/Data/Short_Tower_Data/Proc_FF2_1HzSTSdespikedrotated.csv')
 
 df_s = df_s1.truncate(before= np.where(df_s1['TIMESTAMP'] == '1/30/2013 15:00')[0][0], 
                     after=np.where(df_s1['TIMESTAMP'] == '1/30/2013 15:30')[0][0])
@@ -478,10 +481,10 @@ wss = np.sqrt((us ** 2) + (vs ** 2))
 short_tower_time = np.arange(600, 2400)
 
 # %% Plotting
+time_sim = wrf.getvar(file_1, "XTIME", None)
 fig, ax = plt.subplots(3, figsize = (12,10))
 n = 600
 plt.suptitle('10_11 0.3z0 run more levels', fontsize = 10, fontweight = 'bold')
->>>>>>> ember_files
 # 5.33 Meter plot
 #plt.suptitle('Simulated Main Tower Winds From Open Boundary Fire Run', fontsize = 18, fontweight = 'bold')
 #ax[0].plot(time_main, ws_20, color = 'green', label = 'Main Tower Winds')
@@ -519,8 +522,6 @@ ax[2].set_xlabel('Time (S)', fontsize = 12, fontweight = 'bold')
 ax[2].legend()
 ax[2].grid()
 # ax[2].set_xlim(1150, 1400)
-<<<<<<< HEAD
-=======
 
 plt.tight_layout()
 #plt.savefig('/home/jbenik/fireflux_med/images/u_and_v_cyclic_no_fire.png')
@@ -567,8 +568,6 @@ ax[2].set_xlabel('Time (S)', fontsize = 12, fontweight = 'bold')
 ax[2].legend()
 ax[2].grid()
 # ax[2].set_xlim(1150, 1400)
->>>>>>> ember_files
-
 plt.tight_layout()
 #plt.savefig('/home/jbenik/fireflux_med/images/u_and_v_cyclic_no_fire.png')
 plt.show()
